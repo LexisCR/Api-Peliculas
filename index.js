@@ -6,8 +6,6 @@ const verificarToken = require('./verificarToken.js');
 require('dotenv').config();
 const cors = require('cors');
 
-app.use(cors());
-
 const app = express();
 const port = process.env.PORT;
 
@@ -18,6 +16,8 @@ const swaggerDocument = YAML.load('./swagger.yaml');
 
 app.use(express.json());
 app.use(bearer());
+app.use(cors());
+
 
 app.use(loginRouter);
 app.use('/peliculas', verificarToken, peliculasRouter.router)
