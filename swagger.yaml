@@ -202,7 +202,7 @@ paths:
     post:
       summary: Iniciar sesión
       tags:
-        - Autenticación
+        - Usuarios
       requestBody:
         required: true
         content:
@@ -266,4 +266,27 @@ paths:
           
         '500':
           description: Error al registrar usuario en la base de datos
+
+  /usuarios:
+    get:
+      summary: Obtener todos los usuarios o uno por ID
+      tags:
+        - Usuarios
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: query
+          required: false
+          description: ID del usuario
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Lista de usuarios
+        '401':
+          description: Token no enviado
+        '403':
+          description: Acceso denegado
       

@@ -76,4 +76,23 @@ router.post('/register', verificarToken, verificarRol('editor'),async (req, res)
     res.status(201).json({ mensaje: 'Usuario registrado' });
   });
 });
+
+router.get('/usuarios', verificarToken, verificarRol('editor'), async(req, res) => {
+  if(typeof(req.query.id) == "undefined"){ consulta = "SELECT * FROM usuarios"
+    } else{ consulta = "SELECT * FROM usuarios WHERE id = ?" }
+
+    db.query(
+        consulta, [req.query.id],
+        function(err, results, fields){
+            if(err){
+                res.json({Error: "Error en el servidor"})
+            }
+            if(results.length>0){
+                res.json({resultado:results})
+            } else{
+                res.json({Error:"No se encontraron resultados"});
+            }
+        }
+    )
+})
 module.exports = router;
