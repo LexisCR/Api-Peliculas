@@ -1,0 +1,298 @@
+openapi: 3.0.0
+info:
+  title: API de Películas
+  description: Documentación de la API de películas con autenticación JWT y roles.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Películas
+    description: Operaciones relacionadas con películas
+
+paths:
+  /peliculas:
+    get:
+      summary: Obtener todas las películas o una por ID
+      tags:
+        - Películas
+      parameters:
+        - name: id
+          in: query
+          required: false
+          description: ID de la película
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Lista de películas
+        '401':
+          description: Token no enviado
+        '403':
+          description: Acceso denegado
+    post:
+      summary: Crear una nueva película
+      tags:
+        - Películas
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                titulo:
+                  type: string
+                director:
+                  type: string
+                genero:
+                  type: string
+                anio:
+                  type: integer
+                duracion:
+                  type: integer
+                clasificacion:
+                  type: string
+                idioma:
+                  type: string
+                sinopsis:
+                  type: string
+                fecha_estreno:
+                  type: string
+                  format: date
+      responses:
+        '201':
+          description: Película insertada correctamente
+        '403':
+          description: Acceso denegado por rol
+
+    delete:
+      summary: Eliminar una película por ID
+      tags:
+        - Películas
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: query
+          required: true
+          description: ID de la película a eliminar
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Se elimino la pelicula correctamente!
+        '403':
+          description: Acceso denegado por rol
+        '404':
+          description: No se encontro la pelicula a eliminar
+
+    put:
+      summary: Reemplazar completamente una película por ID
+      tags:
+        - Películas
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: query
+          required: true
+          description: ID de la película a reemplazar
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                titulo:
+                  type: string
+                director:
+                  type: string
+                genero:
+                  type: string
+                anio:
+                  type: integer
+                duracion:
+                  type: integer
+                clasificacion:
+                  type: string
+                idioma:
+                  type: string
+                sinopsis:
+                  type: string
+                fecha_estreno:
+                  type: string
+                  format: date
+      responses:
+        '200':
+          description: Película modificada correctamente
+        '403':
+          description: Acceso denegado por rol
+        '404':
+          description: No se encontró la película para modificar
+
+    patch:
+      summary: Actualizar parcialmente una película por ID
+      tags:
+        - Películas
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: query
+          required: true
+          description: ID de la película a modificar
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                titulo:
+                  type: string
+                director:
+                  type: string
+                genero:
+                  type: string
+                anio:
+                  type: integer
+                duracion:
+                  type: integer
+                clasificacion:
+                  type: string
+                idioma:
+                  type: string
+                sinopsis:
+                  type: string
+                fecha_estreno:
+                  type: string
+                  format: date
+      responses:
+        '200':
+          description: Película actualizada correctamente
+        '403':
+          description: Acceso denegado por rol
+        '404':
+          description: No se encontró la película para actualizar
+
+  /login:
+    post:
+      summary: Iniciar sesión
+      tags:
+        - Autenticación
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                correo:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Token generado
+        '401':
+          description: Credenciales inválida
+
+  /register:
+    post:
+      summary: Registrar un nuevo usuario
+      description: Crea un nuevo usuario en el sistema. Solo los usuarios con rol `editor` pueden acceder.
+      tags:
+        - Usuarios
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - correo
+                - password
+                - rol
+              properties:
+                correo:
+                  type: string
+                  format: email
+                  example: nuevo@correo.com
+                password:
+                  type: string
+                  format: password
+                  example: password123
+                rol:
+                  type: string
+                  enum: [lector, editor]
+                  example: lector
+      responses:
+        '201':
+          description: Usuario registrado correctamente
+          
+        '400':
+          description: Datos faltantes en el cuerpo de la solicitud
+          
+        '401':
+          description: Token no enviado
+          
+        '403':
+          description: Acceso denegado (token inválido o rol insuficiente)
+          
+        '500':
+          description: Error al registrar usuario en la base de datos
+      x-codeSamples:
+        - lang: cURL
+          label: cURL example
+          source: |
+            curl -X POST "http://localhost:3000/register" \
+            -H "Authorization: Bearer TU_TOKEN_AQUI" \
+            -H "Content-Type: application/json" \
+            -d '{
+            "correo": "nuevo@correo.com",
+            "password": "password123",
+            "rol": "lector"
+            }'
+        - lang: JavaScript
+          label: JavaScript (fetch)
+          source: |
+            fetch("http://localhost:3000/register", {
+            method: "POST",
+            headers: {
+              "Authorization": "Bearer TU_TOKEN_AQUI",
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              correo: "nuevo@correo.com",
+              password: "password123",
+              rol: "lector"
+            })
+            })
+            .then(res => res.json())
+            .then(data => console.log(data))
+            .catch(err => console.error(err));
