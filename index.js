@@ -4,6 +4,9 @@ const loginRouter = require('./routes/loginRoutes.js');
 const bearer = require('express-bearer-token');
 const verificarToken = require('./verificarToken.js');
 require('dotenv').config();
+const cors = require('cors');
+
+app.use(cors());
 
 const app = express();
 const port = process.env.PORT;
