@@ -5,7 +5,7 @@ info:
   version: 1.0.0
 
 servers:
-  - url: http://localhost:3000
+  - url: https://api-peliculas-production-1fa3.up.railway.app/
 
 components:
   securitySchemes:
@@ -266,33 +266,4 @@ paths:
           
         '500':
           description: Error al registrar usuario en la base de datos
-      x-codeSamples:
-        - lang: cURL
-          label: cURL example
-          source: |
-            curl -X POST "http://localhost:3000/register" \
-            -H "Authorization: Bearer TU_TOKEN_AQUI" \
-            -H "Content-Type: application/json" \
-            -d '{
-            "correo": "nuevo@correo.com",
-            "password": "password123",
-            "rol": "lector"
-            }'
-        - lang: JavaScript
-          label: JavaScript (fetch)
-          source: |
-            fetch("http://localhost:3000/register", {
-            method: "POST",
-            headers: {
-              "Authorization": "Bearer TU_TOKEN_AQUI",
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              correo: "nuevo@correo.com",
-              password: "password123",
-              rol: "lector"
-            })
-            })
-            .then(res => res.json())
-            .then(data => console.log(data))
-            .catch(err => console.error(err));
+      
